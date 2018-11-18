@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
+        <link rel="stylesheet" href="css/TODO_List.css">
+        <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+        <title>TODO List</title>
+        <meta charset='utf-8'>
+
+        <!-- Model-->
+        <script src="js/events/EventType.js"></script>
+        <script src="js/events/Event.js"></script>
+
+        <script src="js/model/List.js"></script>
+        <script src="js/model/ListElement.js"></script>
+        <script src="js/model/Note.js"></script>
+        <script src="js/model/Board.js"></script>
+        <script src="js/model/Model.js"></script>
+        <script src="js/model/ItemsFactory.js"></script>
+        <script src="js/model/Picture.js"></script>
+
+        <!-- Navigation-->
+        <script src="js/navigation/NavigationView.js"></script>
+
+        <!-- View-->
+        <script src="js/view/ListView.js"></script>
+        <script src="js/view/ListElementView.js"></script>
+        <script src="js/view/NoteView.js"></script>
+        <script src="js/view/BoardView.js"></script>
+        <script src="js/view/HeaderView.js"></script>
+        <script src="js/view/BoardHeaderView.js"></script>
+        <script src="js/view/ModelView.js"></script>
+        <script src="js/view/ImageView.js"></script>
+        <script src="js/view/ViewsFactory.js"></script>
+
+        <script src="js/main.js"></script>
+        <script src="js/moveElement.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>
+          let id = '{{ user_id }}';
+
+          function send_value() {
+            $.ajax({
+              type: "POST",
+              url: "../src/save.php?cmd=save&id=" + id,
+              data: {data: JSON.stringify(model)},
+              dataType: "json",
+              success: function () {
+                console.log("Success");
+              }
+            });
+          }
+        </script>
+    </head>
+    <body>
+        <div id="content">
+            <p class="logo_todo">TODO</p>
+            <p class="logo_list">list</p>
+            <input type="hidden" id="boardJson" value="{{ json_string }}"/>
+            <script>
+              initialize();
+            </script>
+            <p class="submit"><input id="button_submit" class="button" name="submit" type="submit" value="Сохранить"
+                                     onclick="send_value()"></p>
+            <div class="button_exit"><p class="submit"><a href="../src/sign_out.php"><input id="button_submit" class="button" name="submit" type="submit" value="Выйти"></a></p></div>
+           {#<p><a href="../src/sign_out.php"><input  class="button_exit" value="Выйти"></a></p>#}
+        </div>
+        <footer>
+            © 2018 <a> TODO List </a> Все права защищены.
+        </footer>
+    </body>
+</html>
