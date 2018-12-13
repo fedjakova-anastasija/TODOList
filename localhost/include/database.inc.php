@@ -52,6 +52,53 @@ function dbUpdateJsonString($id, $result)
     return ($sql);
 }
 
+function dbUpdateJsonStringElements($id, $result)
+{
+    global $connection;
+    dbConnect();
+    $get_data = json_decode($result);
+    $boards = $get_data->_boards;
+    foreach($boards as $board) {
+        $idBoard = $board->_id;
+        $titleBoard = $board->_title;
+        $listsBoard = $board->_lists;
+        $notesBoard = $board->_notes;
+        $imagesBoard = $board->_images;
+        foreach($listsBoard as $list) {
+            $idList = $list->_id;
+            $titleList = $list->_title;
+            $elementsList = $list->_elements;
+            $typeList = $list->_type;
+            $positionList = $list->_position;
+            foreach($elementsList as $elements) {
+                $textElements = $elements->_text;
+                $idElements = $elements->_id;
+                $checkedElements = $elements->_checked;
+            }
+        }
+        foreach($notesBoard as $note) {
+            $idNote = $note->_id;
+            $titleNote = $note->_title;
+            $typeNote = $note->_type;
+            $positionNote = $note->_position;
+        }
+        foreach($imagesBoard as $images) {
+            $idImage = $images->_id;
+            $pathImage = $images->_path;
+            $typeImage = $images->_type;
+            $positionImage = $images->_position;
+        }
+    }
+    $about = $get_data->_about;
+    $name = $about->name;
+    $lastName = $about->lastName;
+    $info = $about->info;
+    $email = $about->email;
+    $query = "UPDATE user_page SET json_string = '$result' WHERE id = '$id'";
+    $sql = mysqli_query($connection, $query);
+    return ($sql);
+}
+
 function dbUpdateUser($id, $name, $surname, $email)
 {
     global $connection;

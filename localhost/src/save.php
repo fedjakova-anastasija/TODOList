@@ -19,7 +19,7 @@ function checkSave($id, $result)
         dbInsertJsonString($id, $result);
     } else {
         dbUpdateJsonString($id, $result);
-
+        dbUpdateJsonStringElements($id, $result);
         $get_data = json_decode($result);
         $name = $get_data->_about->name;
         $surname = $get_data->_about->lastName;
