@@ -64,6 +64,7 @@ function dbUpdateJsonStringElements($id, $result)
         $listsBoard = $board->_lists;
         $notesBoard = $board->_notes;
         $imagesBoard = $board->_images;
+        $query = "UPDATE board SET id = '$idBoard', id_user = '$id', title = '$titleBoard'";
         foreach($listsBoard as $list) {
             $idList = $list->_id;
             $titleList = $list->_title;
@@ -94,7 +95,6 @@ function dbUpdateJsonStringElements($id, $result)
     $lastName = $about->lastName;
     $info = $about->info;
     $email = $about->email;
-    $query = "UPDATE user_page SET json_string = '$result' WHERE id = '$id'";
     $sql = mysqli_query($connection, $query);
     return ($sql);
 }
@@ -112,7 +112,7 @@ function dbRegistrationInsert($name, $surname, $login, $password, $email)
 {
     global $connection;
     dbConnect();
-    $query = "INSERT INTO user VALUES (id, '$name','$surname','$login','$password','$email')";;
+    $query = "INSERT INTO user VALUES (id, '$name','$surname','$login','$password','$email', '', '')";;
     mysqli_query($connection, $query);
     return (mysqli_affected_rows($connection) != 0);
 }

@@ -29,6 +29,7 @@ function checkEntrance($name, $surname, $login, $password, $email)
             $_SESSION['id'] = $check['id'];
             $guest = $check['name'] . " " . $check['surname'];
             registrationIntroPage($guest);
+
         }
     } else {
         $message = "вы не зарегистрированы";
