@@ -67,17 +67,17 @@ function dbInsertJsonStringElements($id, $result)
             //$typeList = $list->_type;
             $positionList = $list->_position;
             $query .= "INSERT INTO board_item (id_board, id_item_type, title, x, y) VALUES ('$idBoard', '$idItemListType[id]', '$titleList', '$positionList->x', '$positionList->y'); ";
-            $query .= "INSERT INTO list (id_board) VALUES ('$idBoard'); ";
+            $query .= "INSERT INTO list (id, id_board) VALUES ('$idList', '$idBoard'); ";
 
             foreach ($elementsList as $elements) {
                 $textElements = $elements->_text;
-                //$idElements = $elements->_id;
+                $idElements = $elements->_id;
                 $checkedElements = $elements->_checked;
                 //var_dump($checkedElements);
                 $state = $checkedElements ? 1 : 0;
                 $idListItemStatus = mysqli_fetch_array(mysqli_query($connection, "SELECT status.id FROM status WHERE (status.state = '$state')"));
                 //var_dump($idListItemStatus);
-                $query .= "INSERT INTO list_item (id_list, id_status, text) VALUES ('$idList', '$idListItemStatus[id]', '$textElements'); ";
+                $query .= "INSERT INTO list_item (id, id_list, id_status, text) VALUES ('$idElements', '$idList', '$idListItemStatus[id]', '$textElements'); ";
             }
         }
         foreach ($notesBoard as $note) {
@@ -88,7 +88,7 @@ function dbInsertJsonStringElements($id, $result)
             $positionNote = $note->_position;
 
             $query .= "INSERT INTO board_item (id_board, id_item_type, title, position) VALUES ('$idBoard', '$idItemNoteType', '$titleNote', '$positionNote'); ";
-            $query .= "INSERT INTO note (id_board, text) VALUES ('$idBoard', '$textNote'); ";
+            $query .= "INSERT INTO note (id, id_board, text) VALUES ('$idNote', '$idBoard', '$textNote'); ";
         }
         foreach ($imagesBoard as $images) {
             $idImage = $images->_id;
@@ -97,7 +97,7 @@ function dbInsertJsonStringElements($id, $result)
             $positionImage = $images->_position;
 
             $query .= "INSERT INTO board_item (id_board, id_item_type, title, position) VALUES ('$idBoard', '$idItemImageType', '', '$positionImage'); ";
-            $query .= "INSERT INTO image (id_board, image_path) VALUES ('$idImage', '$idBoard', '$pathImage'); ";
+            $query .= "INSERT INTO image (id, id_board, image_path) VALUES ('$idImage', '$idImage', '$idBoard', '$pathImage'); ";
         }
     }
     $about = $get_data->_about;
