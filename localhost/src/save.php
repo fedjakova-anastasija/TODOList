@@ -16,7 +16,8 @@ function checkSave($id, $result)
 {
     $check = dbSelectIdFromUserPage($id);
     if (empty($check['id'])) {
-        dbInsertJsonString($id, $result);
+        //dbInsertJsonString($id, $result);
+        dbInsertJsonStringElements($id, $result);
     } else {
         dbUpdateJsonString($id, $result);
         dbUpdateJsonStringElements($id, $result);

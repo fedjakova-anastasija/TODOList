@@ -43,6 +43,70 @@ function dbInsertJsonString($id, $result)
     return ($sql);
 }
 
+function dbInsertJsonStringElements($id, $result)
+{
+    global $connection;
+    dbConnect();
+    $get_data = json_decode($result);
+    $boards = $get_data->_boards;
+    foreach($boards as $board) {
+        $idBoard = $board->_id;
+        $titleBoard = $board->_title;
+        $listsBoard = $board->_lists;
+        $notesBoard = $board->_notes;
+        $imagesBoard = $board->_images;
+        $query = "INSERT INTO board (id, id_user, title) VALUES ('$idBoard', '$id', '$titleBoard'); ";
+        $idItemListType = "SELECT item_type.id FROM item_type WHERE (item_type.type = 'list'); ";
+        $idItemNoteType = "SELECT item_type.id FROM item_type WHERE (item_type.type = 'note'); ";
+        $idItemImageType = "SELECT item_type.id FROM item_type WHERE (item_type.type = 'image'); ";
+        foreach($listsBoard as $list) {
+            $idList = $list->_id;
+            $titleList = $list->_title;
+            $elementsList = $list->_elements;
+            //$typeList = $list->_type;
+            $positionList = $list->_position;
+            $query.= "INSERT INTO board_item (id, id_board, id_item_type, title, x, y) VALUES (id, '$idBoard', '$idItemListType', '$titleList', '$positionList->x', '$positionList->y'); ";
+            $query.= "INSERT INTO list (id, id_board) VALUES ('$idList', '$idBoard'); ";
+
+            foreach($elementsList as $elements) {
+                $textElements = $elements->_text;
+                //$idElements = $elements->_id;
+                $checkedElements = $elements->_checked;
+
+                $idListItemStatus = "SELECT status.id FROM status WHERE (status.type = '$checkedElements'); ";
+                $query .= "INSERT INTO list_item (id, id_list, id_status, text) VALUES (id, '$idList', '$idListItemStatus', '$textElements'); ";
+                }
+        }
+        foreach($notesBoard as $note) {
+            $idNote = $note->_id;
+            $titleNote = $note->_title;
+            $textNote = $note->_text;
+            //$typeNote = $note->_type;
+            $positionNote = $note->_position;
+
+            $query .= "INSERT INTO board_item (id, id_board, id_item_type, title, position) VALUES (id, '$idBoard', '$idItemNoteType', '$titleNote', '$positionNote'); ";
+            $query .= "INSERT INTO note (id, id_board, text) VALUES ('$idNote', '$idBoard', '$textNote'); ";
+        }
+        foreach($imagesBoard as $images) {
+            $idImage = $images->_id;
+            $pathImage = $images->_path;
+            //$typeImage = $images->_type;
+            $positionImage = $images->_position;
+
+            $query .= "INSERT INTO board_item (id, id_board, id_item_type, title, position) VALUES (id, '$idBoard', '$idItemImageType', '', '$positionImage'); ";
+            $query .= "INSERT INTO image (id, id_board, image_path) VALUES ('$idImage', '$idBoard', '$pathImage'); ";
+        }
+    }
+    $about = $get_data->_about;
+    $name = $about->name;
+    $lastName = $about->lastName;
+    $info = $about->info;
+    $email = $about->email;
+   // $query = $queryBoard + $queryBoardItem;
+    $sql = mysqli_multi_query($connection, $query);
+    return ($sql);
+}
+
 function dbUpdateJsonString($id, $result)
 {
     global $connection;
