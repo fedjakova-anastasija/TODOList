@@ -189,7 +189,7 @@ function dbSelectIdFromUserPage($id)
 {
     global $connection;
     dbConnect();
-    $query = "SELECT * FROM user_page WHERE  id = '$id'";
+    $query = "SELECT * FROM user WHERE  id = '$id'";
     $result = mysqli_query($connection, $query);
     $check = mysqli_fetch_array($result);
     return ($check);
