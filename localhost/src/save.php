@@ -28,5 +28,4 @@ function checkSave($id, $result)
 //        dbUpdateUser($id, $name, $surname, $email);
 //    }
     dbInsertJsonStringElements($id, $result);
-    //TODO: делать в таблицу insert
 }
