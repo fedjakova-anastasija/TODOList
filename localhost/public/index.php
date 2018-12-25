@@ -27,9 +27,9 @@ function getMainPage($id, $name, $surname, $email)
     if ($check['id'] == $id) {
         $id_session = $_SESSION['id'];
         if ($id == $id_session) {
-            $check = dbSelectIdFromUserPage($id);
-            if ($check['id'] == $id) {
-                $json_string = $check['json_string'];
+            $check = dbSelectIdUserFromBoard($id);
+            if ($check['id_user'] == $id) {
+                //TODO: вытянуть и собрать json
             } else {
                 $json_string = '{"_boards":[{"_id":0,"_title":"Доска","_lists":[],"_notes":[],"_images":[]}],"_about":{"name":"' . $name . '","lastName":"' . $surname . '","info":"","email":"' . $email . '","img":""}}';
             }

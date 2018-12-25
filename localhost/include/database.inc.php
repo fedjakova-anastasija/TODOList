@@ -49,29 +49,31 @@ function dbInsertJsonStringElements($id, $result)
     dbConnect();
     $get_data = json_decode($result);
     $boards = $get_data->_boards;
+    $query = "";
+    var_dump($result);
     foreach ($boards as $board) {
-        $idBoard = $board->_id;
+        $idBoard = $board->_id + 1;
         $titleBoard = $board->_title;
         $listsBoard = $board->_lists;
         $notesBoard = $board->_notes;
         $imagesBoard = $board->_images;
-        $query = "INSERT INTO board (id, id_user, title) VALUES ('$idBoard', '$id', '$titleBoard'); ";
+        $query .= "INSERT INTO board (id, id_user, title) VALUES ('$idBoard', '$id', '$titleBoard'); ";
         $idItemListType = mysqli_fetch_array(mysqli_query($connection, "SELECT item_type.id FROM item_type WHERE (item_type.type = 'list')"));
         //var_dump($idItemListType[id]);
         $idItemNoteType = mysqli_fetch_array(mysqli_query($connection, "SELECT item_type.id FROM item_type WHERE (item_type.type = 'note')"));
         $idItemImageType = mysqli_fetch_array(mysqli_query($connection, "SELECT item_type.id FROM item_type WHERE (item_type.type = 'image')"));
         foreach ($listsBoard as $list) {
-            $idList = $list->_id;
+            $idList = $list->_id + 1;
             $titleList = $list->_title;
             $elementsList = $list->_elements;
             //$typeList = $list->_type;
             $positionList = $list->_position;
-            $query .= "INSERT INTO board_item (id_board, id_item_type, title, x, y) VALUES ('$idBoard', '$idItemListType[id]', '$titleList', '$positionList->x', '$positionList->y'); ";
+            $query .= "INSERT INTO board_item (id_board, id_item_type, title, x_pos, y_pos) VALUES ('$idBoard', '$idItemListType[id]', '$titleList', '$positionList->x', '$positionList->y'); ";
             $query .= "INSERT INTO list (id, id_board) VALUES ('$idList', '$idBoard'); ";
 
             foreach ($elementsList as $elements) {
                 $textElements = $elements->_text;
-                $idElements = $elements->_id;
+                $idElements = $elements->_id + 1;
                 $checkedElements = $elements->_checked;
                 //var_dump($checkedElements);
                 $state = $checkedElements ? 1 : 0;
@@ -81,22 +83,22 @@ function dbInsertJsonStringElements($id, $result)
             }
         }
         foreach ($notesBoard as $note) {
-            $idNote = $note->_id;
+            $idNote = $note->_id + 1;
             $titleNote = $note->_title;
             $textNote = $note->_text;
             //$typeNote = $note->_type;
             $positionNote = $note->_position;
 
-            $query .= "INSERT INTO board_item (id_board, id_item_type, title, position) VALUES ('$idBoard', '$idItemNoteType', '$titleNote', '$positionNote'); ";
+            $query .= "INSERT INTO board_item (id_board, id_item_type, title, x_pos, y_pos) VALUES ('$idBoard', '$idItemNoteType[id]', '$titleNote', '$positionNote->x', '$positionNote->y'); ";
             $query .= "INSERT INTO note (id, id_board, text) VALUES ('$idNote', '$idBoard', '$textNote'); ";
         }
         foreach ($imagesBoard as $images) {
-            $idImage = $images->_id;
+            $idImage = $images->_id + 1;
             $pathImage = $images->_path;
             //$typeImage = $images->_type;
             $positionImage = $images->_position;
 
-            $query .= "INSERT INTO board_item (id_board, id_item_type, title, position) VALUES ('$idBoard', '$idItemImageType', '', '$positionImage'); ";
+            $query .= "INSERT INTO board_item (id_board, id_item_type, title, x_pos, y_pos) VALUES ('$idBoard', '$idItemImageType[id]', '', '$positionImage->x', '$positionImage->y'); ";
             $query .= "INSERT INTO image (id, id_board, image_path) VALUES ('$idImage', '$idImage', '$idBoard', '$pathImage'); ";
         }
     }
@@ -185,11 +187,11 @@ function dbRegistrationInsert($name, $surname, $login, $password, $email)
     return (mysqli_affected_rows($connection) != 0);
 }
 
-function dbSelectIdFromUserPage($id)
+function dbSelectIdUserFromBoard($id)
 {
     global $connection;
     dbConnect();
-    $query = "SELECT * FROM user WHERE  id = '$id'";
+    $query = "SELECT * FROM board WHERE id_user = '$id'";
     $result = mysqli_query($connection, $query);
     $check = mysqli_fetch_array($result);
     return ($check);
