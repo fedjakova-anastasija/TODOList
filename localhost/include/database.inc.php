@@ -290,6 +290,14 @@ function dbGetStateItem($idStatus)
     return ($row);
 }
 
+function dbDeleteUserData($id)
+{
+    global $connection;
+    dbConnect();
+    $query = "DELETE FROM board WHERE id_user = 1;";
+    $result = mysqli_query($connection, $query);
+    return $result;
+}
 
 /**
  * @param $id
@@ -330,7 +338,7 @@ function dbGetJsonFromDatabase($id)
         $listArr = [];
         $noteArr = [];
         $imageArr = [];
-        foreach ($itemTypes as $key => $item)
+        foreach ($itemTypes as $item)
         {
             switch ($item['type']) {
                 case 'list':
@@ -352,10 +360,10 @@ function dbGetJsonFromDatabase($id)
                             ];
 
                             $listItem = dbGetListItem($listArr[$i]["id"]);
-                            foreach ($listItem as $list)
+                            foreach ($listItem as $key => $list)
                             {
                                 $status = dbGetStateItem($list["id_status"]);
-                                $str["_boards"][$board['id'] - 1]["_lists"][$listArr[$i]["id"] - 1]["_elements"][] = [
+                                $str["_boards"][$board['id'] - 1]["_lists"][$i]["_elements"][] = [
                                     "_text"    => $list["text"],
                                     "_id"      => $list["id"],
                                     "_checked" => $status["state"] - 1
@@ -407,5 +415,6 @@ function dbGetJsonFromDatabase($id)
 
         }
     }
+
     return (json_encode($str, JSON_FORCE_OBJECT));
 }
