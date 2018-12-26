@@ -50,7 +50,6 @@ function dbInsertJsonStringElements($id, $result)
     $get_data = json_decode($result);
     $boards = $get_data->_boards;
     $query = "";
-    var_dump($result);
     foreach ($boards as $board) {
         $idBoard = $board->_id + 1;
         $titleBoard = $board->_title;
@@ -256,7 +255,7 @@ function dbGetBoardItemByItemType($idBoard, $itemType)
 {
     global $connection;
     dbConnect();
-    $query = "SELECT * FROM $itemType WHERE id = '$idBoard'";
+    $query = "SELECT * FROM $itemType WHERE id_board = '$idBoard'";
     $result = mysqli_query($connection, $query);
     $arr = [];
     while ($row = mysqli_fetch_array($result)) {
@@ -266,85 +265,147 @@ function dbGetBoardItemByItemType($idBoard, $itemType)
     return ($arr);
 }
 
+function dbGetListItem($idList)
+{
+    global $connection;
+    dbConnect();
+    $query = "SELECT * FROM list_item WHERE id_list = '$idList'";
+    $result = mysqli_query($connection, $query);
+    $arr = [];
+    while ($row = mysqli_fetch_array($result)) {
+        array_push($arr, $row);
+    }
+
+    return ($arr);
+}
+
+function dbGetStateItem($idStatus)
+{
+    global $connection;
+    dbConnect();
+    $query = "SELECT * FROM status WHERE id = '$idStatus'";
+    $result = mysqli_query($connection, $query);
+    $row = mysqli_fetch_array($result);
+
+    return ($row);
+}
+
+
+/**
+ * @param $id
+ * @return array
+ */
 function dbGetJsonFromDatabase($id)
 {
     global $connection;
     dbConnect();
     $boards = dbSelectUserBoards($id);
-    $str = "";
+
+    $user = dbIdFromUser($id);
+
+    $str = [
+        "_boards" => [],
+        "_about" => [
+            "name"     => $user["name"],
+            "lastName" => $user["surname"],
+            "info"     => $user["info"],
+            "email"    => $user["email"],
+            "img"      => $user["image"]
+        ]];
+
     $itemTypes = dbGetAllItemTypes();
-//    var_dump($itemTypes);
-//    $json_string = '{"_boards":[{"_id":0,"_title":"Доска","_lists":[],"_notes":[],"_images":[]}],"_about":{"name":"' . $name . '","lastName":"' . $surname . '","info":"","email":"' . $email . '","img":""}}';
+    $str["_boards"] = [];
     foreach ($boards as $board) {
-//        $idBoard = $board->_id;
-        $titleBoard = $board['title'];
         $boardItems = dbGetBoardItem($board['id']);
-        //TODO:: сделать цикл boardItems определять item type в завиимости от него
+        $str["_boards"][] = [
+            "_id"     => $board['id'],
+            "_title"  => $board['title'],
+            "_lists"  => [],
+            "_notes"  => [],
+            "_images" => []
+        ];
         $listBoardItems = [];
         $noteBoardItems = [];
         $imageBoardItems = [];
         $listArr = [];
         $noteArr = [];
         $imageArr = [];
-        foreach ($itemTypes as $item)
+        foreach ($itemTypes as $key => $item)
         {
             switch ($item['type']) {
                 case 'list':
                     $listBoardItems = getBoardItemArray($item['id'], $boardItems);
                     $listArr = dbGetBoardItemByItemType($board['id'], $item['type']);
-                    //TODO: Найти все листы
+                    if (sizeof($listBoardItems) > 0)
+                    {
+                        for ($i = 0; $i < sizeof($listArr); $i++)
+                        {
+                            $str["_boards"][$board['id'] - 1]["_lists"][] = [
+                                "_id"       => $listArr[$i]["id"],
+                                "_title"    => $listBoardItems[$i]["title"],
+                                "_elements" => [],
+                                "_type"     => $item['type'],
+                                "_position" => [
+                                    "x" => $listBoardItems[$i]["x_pos"],
+                                    "y" => $listBoardItems[$i]["y_pos"]
+                                ]
+                            ];
+
+                            $listItem = dbGetListItem($listArr[$i]["id"]);
+                            foreach ($listItem as $list)
+                            {
+                                $status = dbGetStateItem($list["id_status"]);
+                                $str["_boards"][$board['id'] - 1]["_lists"][$listArr[$i]["id"] - 1]["_elements"][] = [
+                                    "_text"    => $list["text"],
+                                    "_id"      => $list["id"],
+                                    "_checked" => $status["state"] - 1
+                                ];
+                            }
+                        }
+                    }
                     break;
                 case 'note':
                     $noteBoardItems = getBoardItemArray($item['id'], $boardItems);
                     $noteArr = dbGetBoardItemByItemType($board['id'], $item['type']);
+                    if (sizeof($noteBoardItems) > 0)
+                    {
+                        for ($i = 0; $i < sizeof($noteArr); $i++)
+                        {
+                            $str["_boards"][$board['id'] - 1]["_notes"][] = [
+                                "_id"       => $noteArr[$i]["id"],
+                                "_title"    => $noteBoardItems[$i]["title"],
+                                "_text"     => $noteArr[$i]["text"],
+                                "_type"     => $item['type'],
+                                "_position" => [
+                                    "x" => $noteBoardItems[$i]["x_pos"],
+                                    "y" => $noteBoardItems[$i]["y_pos"]
+                                ]
+                            ];
+                        }
+                    }
                     break;
                 case 'image':
                     $imageBoardItems = getBoardItemArray($item['id'], $boardItems);
                     $imageArr = dbGetBoardItemByItemType($board['id'], $item['type']);
+                    if (sizeof($imageBoardItems) > 0)
+                    {
+                        for ($i = 0; $i < sizeof($imageArr); $i++)
+                        {
+                            $str["_boards"][$board['id'] - 1]["_images"][] = [
+                                "_id"       => $imageArr[$i]["id"],
+                                "_path"     => $imageArr[$i]["image_path"],
+                                "_type"     => $item['type'],
+                                "_position" => [
+                                    "x" => $imageBoardItems[$i]["x_pos"],
+                                    "y" => $imageBoardItems[$i]["y_pos"]
+                                ]
+                            ];
+                        }
+                    }
                     break;
             }
 
         }
-//        print_r($listBoardItems);
-//        print_r($listArr);
-//        print_r($noteBoardItems);
-//        print_r($noteArr);
-//        print_r($imageBoardItems);
-//        print_r($imageArr);
-
-//        $listsBoard = $board->_lists;
-//        $notesBoard = $board->_notes;
-//        $imagesBoard = $board->_images;
-//        $query = "UPDATE board SET id = '$idBoard', id_user = '$id', title = '$titleBoard'";
-//        foreach ($listsBoard as $list) {
-//            $idList = $list->_id;
-//            $titleList = $list->_title;
-//            $elementsList = $list->_elements;
-//            $typeList = $list->_type;
-//            $positionList = $list->_position;
-//            foreach ($elementsList as $elements) {
-//                $textElements = $elements->_text;
-//                $idElements = $elements->_id;
-//                $checkedElements = $elements->_checked;
-//            }
-//        }
-//        foreach ($notesBoard as $note) {
-//            $idNote = $note->_id;
-//            $titleNote = $note->_title;
-//            $typeNote = $note->_type;
-//            $positionNote = $note->_position;
-//        }
-//        foreach ($imagesBoard as $images) {
-//            $idImage = $images->_id;
-//            $pathImage = $images->_path;
-//            $typeImage = $images->_type;
-//            $positionImage = $images->_position;
-//        }
     }
-//    $about = $get_data->_about;
-//    $name = $about->name;
-//    $lastName = $about->lastName;
-//    $info = $about->info;
-//    $email = $about->email;
-    return ($str);
+    return (json_encode($str, JSON_FORCE_OBJECT));
 }
