@@ -225,19 +225,93 @@ function dbGetBoardItem($idBoard)
     return ($arr);
 }
 
+function dbGetAllItemTypes()
+{
+    global $connection;
+    dbConnect();
+    $query = "SELECT * FROM item_type";
+    $result = mysqli_query($connection, $query);
+    $arr = [];
+    while ($row = mysqli_fetch_array($result)) {
+        array_push($arr, $row);
+    }
+
+    return ($arr);
+}
+
+function getBoardItemArray($idType, $boardItems)
+{
+    $arr = [];
+    foreach ($boardItems as $item) {
+        if ($item['id_item_type'] == $idType)
+        {
+            array_push($arr, $item);
+        }
+    }
+
+    return $arr;
+}
+
+function dbGetBoardItemByItemType($idBoard, $itemType)
+{
+    global $connection;
+    dbConnect();
+    $query = "SELECT * FROM $itemType WHERE id = '$idBoard'";
+    $result = mysqli_query($connection, $query);
+    $arr = [];
+    while ($row = mysqli_fetch_array($result)) {
+        array_push($arr, $row);
+    }
+
+    return ($arr);
+}
+
 function dbGetJsonFromDatabase($id)
 {
     global $connection;
     dbConnect();
     $boards = dbSelectUserBoards($id);
     $str = "";
+    $itemTypes = dbGetAllItemTypes();
+//    var_dump($itemTypes);
 //    $json_string = '{"_boards":[{"_id":0,"_title":"Доска","_lists":[],"_notes":[],"_images":[]}],"_about":{"name":"' . $name . '","lastName":"' . $surname . '","info":"","email":"' . $email . '","img":""}}';
     foreach ($boards as $board) {
 //        $idBoard = $board->_id;
         $titleBoard = $board['title'];
         $boardItems = dbGetBoardItem($board['id']);
         //TODO:: сделать цикл boardItems определять item type в завиимости от него
-        var_dump($boardItems);
+        $listBoardItems = [];
+        $noteBoardItems = [];
+        $imageBoardItems = [];
+        $listArr = [];
+        $noteArr = [];
+        $imageArr = [];
+        foreach ($itemTypes as $item)
+        {
+            switch ($item['type']) {
+                case 'list':
+                    $listBoardItems = getBoardItemArray($item['id'], $boardItems);
+                    $listArr = dbGetBoardItemByItemType($board['id'], $item['type']);
+                    //TODO: Найти все листы
+                    break;
+                case 'note':
+                    $noteBoardItems = getBoardItemArray($item['id'], $boardItems);
+                    $noteArr = dbGetBoardItemByItemType($board['id'], $item['type']);
+                    break;
+                case 'image':
+                    $imageBoardItems = getBoardItemArray($item['id'], $boardItems);
+                    $imageArr = dbGetBoardItemByItemType($board['id'], $item['type']);
+                    break;
+            }
+
+        }
+//        print_r($listBoardItems);
+//        print_r($listArr);
+//        print_r($noteBoardItems);
+//        print_r($noteArr);
+//        print_r($imageBoardItems);
+//        print_r($imageArr);
+
 //        $listsBoard = $board->_lists;
 //        $notesBoard = $board->_notes;
 //        $imagesBoard = $board->_images;

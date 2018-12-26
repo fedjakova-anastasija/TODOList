@@ -27,5 +27,6 @@ function checkSave($id, $result)
 //        $email = $get_data->_about->email;
 //        dbUpdateUser($id, $name, $surname, $email);
 //    }
+    var_dump($result);
     dbInsertJsonStringElements($id, $result);
 }
