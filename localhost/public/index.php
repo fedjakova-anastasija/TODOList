@@ -30,7 +30,6 @@ function getMainPage($id, $name, $surname, $email)
             $check = dbSelectIdUserFromBoard($id);
             if ($check['id_user'] == $id) {
                 $json_string = dbGetJsonFromDatabase($id);
-                var_dump($json_string);
             } else {
                 $json_string = '{"_boards":[{"_id":0,"_title":"Доска","_lists":[],"_notes":[],"_images":[]}],"_about":{"name":"' . $name . '","lastName":"' . $surname . '","info":"","email":"' . $email . '","img":""}}';
             }
