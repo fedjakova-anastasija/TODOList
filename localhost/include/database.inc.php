@@ -49,6 +49,7 @@ function dbInsertJsonStringElements($id, $result)
     dbConnect();
     $get_data = json_decode($result);
     $boards = $get_data->_boards;
+    dbUpdateUser($id, $get_data);
     $query = "";
     foreach ($boards as $board) {
         $idBoard = $id . ($board->_id + 1);
@@ -61,7 +62,7 @@ function dbInsertJsonStringElements($id, $result)
         $idItemNoteType = mysqli_fetch_array(mysqli_query($connection, "SELECT item_type.id FROM item_type WHERE (item_type.type = 'note')"));
         $idItemImageType = mysqli_fetch_array(mysqli_query($connection, "SELECT item_type.id FROM item_type WHERE (item_type.type = 'image')"));
         foreach ($listsBoard as $list) {
-            $idList = $list->_id + 1;
+            $idList = $id . ($list->_id + 1);
             $titleList = $list->_title;
             $elementsList = $list->_elements;
             $positionList = $list->_position;
@@ -70,7 +71,7 @@ function dbInsertJsonStringElements($id, $result)
 
             foreach ($elementsList as $elements) {
                 $textElements = $elements->_text;
-                $idElements = $elements->_id + 1;
+                $idElements = $id . ($elements->_id + 1);
                 $checkedElements = $elements->_checked;
                 $state = $checkedElements ? 1 : 0;
                 $idListItemStatus = mysqli_fetch_array(mysqli_query($connection, "SELECT status.id FROM status WHERE (status.state = '$state')"));
@@ -78,7 +79,7 @@ function dbInsertJsonStringElements($id, $result)
             }
         }
         foreach ($notesBoard as $note) {
-            $idNote = $note->_id + 1;
+            $idNote = $id . ($note->_id + 1);
             $titleNote = $note->_title;
             $textNote = $note->_text;
             $positionNote = $note->_position;
@@ -87,16 +88,15 @@ function dbInsertJsonStringElements($id, $result)
             $query .= "INSERT INTO note (id, id_board, text) VALUES ('$idNote', '$idBoard', '$textNote'); ";
         }
         foreach ($imagesBoard as $images) {
-            $idImage = $images->_id + 1;
+            $idImage = $id . ($images->_id + 1);
             $pathImage = $images->_path;
             $positionImage = $images->_position;
 
             $query .= "INSERT INTO board_item (id_board, id_item_type, title, x_pos, y_pos) VALUES ('$idBoard', '$idItemImageType[id]', '', '$positionImage->x', '$positionImage->y'); ";
-            $query .= "INSERT INTO image (id, id_board, image_path) VALUES ('$idImage', '$idImage', '$idBoard', '$pathImage'); ";
+            $query .= "INSERT INTO image (id, id_board, image_path) VALUES ('$idImage', '$idBoard', '$pathImage'); ";
         }
     }
     $sql = mysqli_multi_query($connection, $query);
-
     return ($sql);
 }
 
@@ -271,7 +271,7 @@ function dbGetJsonFromDatabase($id)
 
     $itemTypes = dbGetAllItemTypes();
     $str["_boards"] = [];
-    foreach ($boards as $board) {
+    foreach ($boards as $key1 => $board) {
         $boardItems = dbGetBoardItem($board['id']);
         $str["_boards"][] = [
             "_id"     => $board['id'],
@@ -286,7 +286,7 @@ function dbGetJsonFromDatabase($id)
         $listArr = [];
         $noteArr = [];
         $imageArr = [];
-        foreach ($itemTypes as $key1 => $item)
+        foreach ($itemTypes as $item)
         {
             switch ($item['type']) {
                 case 'list':
