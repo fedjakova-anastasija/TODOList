@@ -366,3 +366,19 @@ function dbGetJsonFromDatabase($id)
 
     return (json_encode($str, JSON_FORCE_OBJECT));
 }
+
+
+function dbSortUsers()
+{
+    global $connection;
+    dbConnect();
+    $query = "";
+    $query .= "DROP TABLE IF EXISTS temptable; ";
+    $query .= "CREATE TEMPORARY TABLE temptable SELECT user.id, user.name FROM user LEFT JOIN board ON board.id_user = user.id; ";
+    $queryItem = "SELECT MAX(counted), name FROM (SELECT COUNT(*) AS counted, name, id FROM t GROUP BY id) AS counts GROUP BY id ORDER BY MAX(counted) DESC;";
+    $result = mysqli_query($connection, $queryItem);
+    $row = mysqli_fetch_array($result);
+    var_dump($row);
+    $sql = mysqli_multi_query($connection, $query);
+    return $sql;
+}
