@@ -119,7 +119,7 @@ function dbUpdateUser($id, $get_data)
     $surname = $about->lastName;
     $info = $about->info;
     $email = $about->email;
-    $image = $about->image;
+    $image = $about->img;
     $query = "UPDATE user SET `name` = '$name', surname = '$surname', email = '$email', info = '$info', image = '$image' WHERE id = '$id'";
     $sql = mysqli_query($connection, $query);
     return ($sql);
