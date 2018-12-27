@@ -35,6 +35,11 @@ function signIn()
     view(getViewForm('sign_in.twig'));
 }
 
+function report()
+{
+    view(getViewForm('report.twig'));
+}
+
 function registration()
 {
     view(getViewForm('registration.twig'));
