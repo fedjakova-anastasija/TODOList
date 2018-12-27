@@ -48,7 +48,6 @@ function dbInsertJsonStringElements($id, $result)
     global $connection;
     dbConnect();
     $get_data = json_decode($result);
-//    dbUpdateUser($id, $get_data);
     $boards = $get_data->_boards;
     $query = "";
     foreach ($boards as $board) {
@@ -59,14 +58,12 @@ function dbInsertJsonStringElements($id, $result)
         $imagesBoard = $board->_images;
         $query .= "INSERT INTO board (id, id_user, title) VALUES ('$idBoard', '$id', '$titleBoard'); ";
         $idItemListType = mysqli_fetch_array(mysqli_query($connection, "SELECT item_type.id FROM item_type WHERE (item_type.type = 'list')"));
-        //var_dump($idItemListType[id]);
         $idItemNoteType = mysqli_fetch_array(mysqli_query($connection, "SELECT item_type.id FROM item_type WHERE (item_type.type = 'note')"));
         $idItemImageType = mysqli_fetch_array(mysqli_query($connection, "SELECT item_type.id FROM item_type WHERE (item_type.type = 'image')"));
         foreach ($listsBoard as $list) {
             $idList = $list->_id + 1;
             $titleList = $list->_title;
             $elementsList = $list->_elements;
-            //$typeList = $list->_type;
             $positionList = $list->_position;
             $query .= "INSERT INTO board_item (id_board, id_item_type, title, x_pos, y_pos) VALUES ('$idBoard', '$idItemListType[id]', '$titleList', '$positionList->x', '$positionList->y'); ";
             $query .= "INSERT INTO list (id, id_board) VALUES ('$idList', '$idBoard'); ";
@@ -75,10 +72,8 @@ function dbInsertJsonStringElements($id, $result)
                 $textElements = $elements->_text;
                 $idElements = $elements->_id + 1;
                 $checkedElements = $elements->_checked;
-                //var_dump($checkedElements);
                 $state = $checkedElements ? 1 : 0;
                 $idListItemStatus = mysqli_fetch_array(mysqli_query($connection, "SELECT status.id FROM status WHERE (status.state = '$state')"));
-                //var_dump($idListItemStatus);
                 $query .= "INSERT INTO list_item (id, id_list, id_status, text) VALUES ('$idElements', '$idList', '$idListItemStatus[id]', '$textElements'); ";
             }
         }
@@ -86,7 +81,6 @@ function dbInsertJsonStringElements($id, $result)
             $idNote = $note->_id + 1;
             $titleNote = $note->_title;
             $textNote = $note->_text;
-            //$typeNote = $note->_type;
             $positionNote = $note->_position;
 
             $query .= "INSERT INTO board_item (id_board, id_item_type, title, x_pos, y_pos) VALUES ('$idBoard', '$idItemNoteType[id]', '$titleNote', '$positionNote->x', '$positionNote->y'); ";
@@ -95,21 +89,14 @@ function dbInsertJsonStringElements($id, $result)
         foreach ($imagesBoard as $images) {
             $idImage = $images->_id + 1;
             $pathImage = $images->_path;
-            //$typeImage = $images->_type;
             $positionImage = $images->_position;
 
             $query .= "INSERT INTO board_item (id_board, id_item_type, title, x_pos, y_pos) VALUES ('$idBoard', '$idItemImageType[id]', '', '$positionImage->x', '$positionImage->y'); ";
             $query .= "INSERT INTO image (id, id_board, image_path) VALUES ('$idImage', '$idImage', '$idBoard', '$pathImage'); ";
         }
     }
-    $about = $get_data->_about;
-    $name = $about->name;
-    $lastName = $about->lastName;
-    $info = $about->info;
-    $email = $about->email;
-    // $query = $queryBoard + $queryBoardItem;
     $sql = mysqli_multi_query($connection, $query);
-    var_dump($query);
+
     return ($sql);
 }
 
@@ -377,6 +364,5 @@ function dbGetJsonFromDatabase($id)
         }
     }
 
-    var_dump($str);
     return (json_encode($str, JSON_FORCE_OBJECT));
 }
