@@ -48,10 +48,11 @@ function dbInsertJsonStringElements($id, $result)
     global $connection;
     dbConnect();
     $get_data = json_decode($result);
+//    dbUpdateUser($id, $get_data);
     $boards = $get_data->_boards;
     $query = "";
     foreach ($boards as $board) {
-        $idBoard = $board->_id + 1;
+        $idBoard = $id . ($board->_id + 1);
         $titleBoard = $board->_title;
         $listsBoard = $board->_lists;
         $notesBoard = $board->_notes;
@@ -121,58 +122,18 @@ function dbUpdateJsonString($id, $result)
     return ($sql);
 }
 
-function dbUpdateJsonStringElements($id, $result)
+function dbUpdateUser($id, $get_data)
 {
     global $connection;
     dbConnect();
-    $get_data = json_decode($result);
-    $boards = $get_data->_boards;
-    foreach ($boards as $board) {
-        $idBoard = $board->_id;
-        $titleBoard = $board->_title;
-        $listsBoard = $board->_lists;
-        $notesBoard = $board->_notes;
-        $imagesBoard = $board->_images;
-        $query = "UPDATE board SET id = '$idBoard', id_user = '$id', title = '$titleBoard'";
-        foreach ($listsBoard as $list) {
-            $idList = $list->_id;
-            $titleList = $list->_title;
-            $elementsList = $list->_elements;
-            $typeList = $list->_type;
-            $positionList = $list->_position;
-            foreach ($elementsList as $elements) {
-                $textElements = $elements->_text;
-                $idElements = $elements->_id;
-                $checkedElements = $elements->_checked;
-            }
-        }
-        foreach ($notesBoard as $note) {
-            $idNote = $note->_id;
-            $titleNote = $note->_title;
-            $typeNote = $note->_type;
-            $positionNote = $note->_position;
-        }
-        foreach ($imagesBoard as $images) {
-            $idImage = $images->_id;
-            $pathImage = $images->_path;
-            $typeImage = $images->_type;
-            $positionImage = $images->_position;
-        }
-    }
+
     $about = $get_data->_about;
     $name = $about->name;
-    $lastName = $about->lastName;
+    $surname = $about->lastName;
     $info = $about->info;
     $email = $about->email;
-    $sql = mysqli_query($connection, $query);
-    return ($sql);
-}
-
-function dbUpdateUser($id, $name, $surname, $email)
-{
-    global $connection;
-    dbConnect();
-    $query = "UPDATE user SET name = '$name', surname = '$surname', email = '$email' WHERE id = '$id'";
+    $image = $about->image;
+    $query = "UPDATE user SET `name` = '$name', surname = '$surname', email = '$email', info = '$info', image = '$image' WHERE id = '$id'";
     $sql = mysqli_query($connection, $query);
     return ($sql);
 }
@@ -294,7 +255,7 @@ function dbDeleteUserData($id)
 {
     global $connection;
     dbConnect();
-    $query = "DELETE FROM board WHERE id_user = 1;";
+    $query = "DELETE FROM board WHERE id_user = '$id';";
     $result = mysqli_query($connection, $query);
     return $result;
 }
@@ -416,5 +377,6 @@ function dbGetJsonFromDatabase($id)
         }
     }
 
+    var_dump($str); 
     return (json_encode($str, JSON_FORCE_OBJECT));
 }
