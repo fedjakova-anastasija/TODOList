@@ -247,16 +247,9 @@ function dbDeleteUserData($id)
     return $result;
 }
 
-/**
- * @param $id
- * @return array
- */
 function dbGetJsonFromDatabase($id)
 {
-    global $connection;
-    dbConnect();
     $boards = dbSelectUserBoards($id);
-
     $user = dbIdFromUser($id);
 
     $str = [
@@ -280,12 +273,6 @@ function dbGetJsonFromDatabase($id)
             "_notes"  => [],
             "_images" => []
         ];
-        $listBoardItems = [];
-        $noteBoardItems = [];
-        $imageBoardItems = [];
-        $listArr = [];
-        $noteArr = [];
-        $imageArr = [];
         foreach ($itemTypes as $item)
         {
             switch ($item['type']) {
@@ -360,7 +347,6 @@ function dbGetJsonFromDatabase($id)
                     }
                     break;
             }
-
         }
     }
 
@@ -374,11 +360,23 @@ function dbSortUsers()
     dbConnect();
     $query = "";
     $query .= "DROP TABLE IF EXISTS temptable; ";
-    $query .= "CREATE TEMPORARY TABLE temptable SELECT user.id, user.name FROM user LEFT JOIN board ON board.id_user = user.id; ";
-    $queryItem = "SELECT MAX(counted), name FROM (SELECT COUNT(*) AS counted, name, id FROM t GROUP BY id) AS counts GROUP BY id ORDER BY MAX(counted) DESC;";
-    $result = mysqli_query($connection, $queryItem);
-    $row = mysqli_fetch_array($result);
-    var_dump($row);
+    $query .= "CREATE TABLE IF NOT EXISTS temptable SELECT user.id, user.name FROM user LEFT JOIN board ON board.id_user = user.id; ";
     $sql = mysqli_multi_query($connection, $query);
+
     return $sql;
+}
+
+function dbGetSortedUsers()
+{
+    global $connection;
+    dbConnect();
+    $tempTable = "SELECT COUNT(*) AS counted, `name`, id FROM temptable GROUP BY id";
+    $query = "SELECT MAX(counted), `name` FROM ($tempTable) AS counts GROUP BY id ORDER BY MAX(counted) DESC";
+    $sql = mysqli_query($connection, $query);
+    $arr = [];
+    while ($row = mysqli_fetch_array($sql)) {
+        array_push($arr, $row);
+    }
+
+    return $arr;
 }

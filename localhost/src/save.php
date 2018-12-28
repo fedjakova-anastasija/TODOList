@@ -18,6 +18,6 @@ function checkSave($id, $result)
     if (!empty($check['id_user'])) {
         dbDeleteUserData($id);
     }
-//dbSortUsers();
+
     dbInsertJsonStringElements($id, $result);
 }

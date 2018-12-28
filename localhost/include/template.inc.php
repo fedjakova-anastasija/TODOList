@@ -1,7 +1,10 @@
 <?php
 function getTwig() {
     $loader = new Twig_Loader_Filesystem(TEMPLATE_DIR);
-    $twig   = new Twig_Environment($loader);
+    $twig = new Twig_Environment($loader, array(
+        'debug' => true,
+    ));
+    $twig->addExtension(new Twig_Extension_Debug());
     return $twig;
 }
 
@@ -27,5 +30,11 @@ function getViewIntroPage($templateName, $id=null, $guest="") {
     $twig = getTwig();
     $twig->addGlobal('id', $id);
     $twig->addGlobal('guest', $guest);
+    return $twig->render($templateName);
+}
+
+function getViewReport($templateName, $report="") {
+    $twig = getTwig();
+    $twig->addGlobal('report', $report);
     return $twig->render($templateName);
 }
