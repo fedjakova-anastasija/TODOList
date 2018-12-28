@@ -1,27 +1,36 @@
 <html>
-    <head>
-        <title>TODO List</title>
-    </head>
-    <body>
+<head>
+    <title>TODO List</title>
+</head>
+<body>
+<div class="header">
+    <div class="header_logo">
         <p class="logo_todo">TODO</p>
         <p class="logo_list">list</p>
-        <div class="container mregister">
-            <div id="form">
-                <h1>Вход</h1>
-                <form action="../src/entrance.php" id="registerform" method="post" name="registerform">
-                    <p><label>Логин<br>
-                            <input class="input" id="login" name="login" size="50" type="text" value="" maxlength="50"></label>
-                    </p>
-                    <p><label>Пароль<br>
-                            <input class="input" id="password" name="password" size="50" type="password" value=""
-                                   maxlength="50"></label></p>
-                    <p class="submit"><input class="button" id="register" name="submit" type="submit" value="Войти">
-                    </p>
-                    <a href="../src/registration.php">Зарегистрироваться</a>
-                    <br>
-                    <a href="../src/report_table.php">Рейтинг пользователей</a>
-                </form>
-            </div>
-        </div>
-    </body>
+    </div>
+
+    <form action="../src/report.php" id="reportform" method="post" name="reportform">
+        <p class="submit"><input class="button" id="report" name="submit" type="submit" value="Рейтинг пользователей">
+        </p>
+    </form>
+</div>
+
+<div class="container mregister">
+    <div id="form">
+        <h1>Вход</h1>
+        <form action="../src/entrance.php" id="registerform" method="post" name="registerform">
+            <p><label>Логин<br>
+                    <input class="input" id="login" name="login" size="50" type="text" value="" maxlength="50"></label>
+            </p>
+            <p><label>Пароль<br>
+                    <input class="input" id="password" name="password" size="50" type="password" value=""
+                           maxlength="50"></label></p>
+            <p class="submit"><input class="button" id="register" name="submit" type="submit" value="Войти">
+            </p>
+            <a href="../src/registration.php">Зарегистрироваться</a>
+            <br>
+        </form>
+    </div>
+</div>
+</body>
 </html>

@@ -56,8 +56,8 @@ span
 
 .logo_todo
 {
-    margin-top: 13px;
-    margin-left: 1px;
+    /*margin-top: 13px;
+    margin-left: 1px;*/
     color: #008080;
 }
 
@@ -161,4 +161,14 @@ footer
     font-size: 12px;
     text-align: center;
     margin-top: 20px;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#report {
+    margin: 0 10px;
 }

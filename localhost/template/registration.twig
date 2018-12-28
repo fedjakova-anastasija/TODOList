@@ -3,8 +3,16 @@
         <title>TODO List</title>
     </head>
     <body>
-        <p class="logo_todo">TODO</p>
-        <p class="logo_list">list</p>
+    <div class="header">
+        <div class="header_logo">
+            <p class="logo_todo">TODO</p>
+            <p class="logo_list">list</p>
+        </div>
+        <form action="../src/report.php" id="reportform" method="post" name="reportform">
+            <p class="submit"><input class="button" id="report" name="submit" type="submit" value="Рейтинг пользователей">
+            </p>
+        </form>
+    </div>
         <div class="container mregister">
             <div id="form">
                 <h1>Регистрация</h1>
