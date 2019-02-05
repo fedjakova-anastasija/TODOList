@@ -40,9 +40,15 @@ function report($report)
     view(getViewReport('report.twig', $report));
 }
 
-function registration()
+/*function registration()
 {
     view(getViewForm('registration.twig'));
+}*/
+
+function registration()
+{
+    echo getViewForm('header.twig');
+    echo getViewForm('registration.twig');
 }
 
 

@@ -1,7 +1,14 @@
 <div id="welcome">
     <h2>Рейтинг пользователей <span>TODO list:</span></h2>
+    {% set i = 0 %}
     {% for value in report %}
-        <p>{{ value.name }}  {{ value.count }}</p>
+        <table>
+            <tr>
+                <td><p>{{ loop.index }}. </p></td>
+                <td><p>{{ value.name }} {{ value.surname }}</p></td>
+                <td><p>({{ value.count }})</p></td>
+            </tr>
+        </table>
     {% endfor %}
     <p><a href="../src/sign_in.php">Вернуться к авторизации</a></p>
 </div>

@@ -360,7 +360,7 @@ function dbSortUsers()
     dbConnect();
     $query = "";
     $query .= "DROP TABLE IF EXISTS temptable; ";
-    $query .= "CREATE TABLE IF NOT EXISTS temptable SELECT user.id, user.name FROM user LEFT JOIN board ON board.id_user = user.id; ";
+    $query .= "CREATE TABLE IF NOT EXISTS temptable SELECT user.id, user.name, user.surname FROM user LEFT JOIN board ON board.id_user = user.id; ";
     $sql = mysqli_multi_query($connection, $query);
 
     return $sql;
@@ -370,8 +370,7 @@ function dbGetSortedUsers()
 {
     global $connection;
     dbConnect();
-    $tempTable = "SELECT COUNT(*) AS counted, `name`, id FROM temptable GROUP BY id";
-    $query = "SELECT MAX(counted), `name` FROM ($tempTable) AS counts GROUP BY id ORDER BY MAX(counted) DESC";
+    $query = "SELECT COUNT(board.id_user), user.name, user.surname FROM board LEFT JOIN user ON user.id = board.id_user GROUP BY id_user ORDER BY COUNT(board.id_user) DESC;";
     $sql = mysqli_query($connection, $query);
     $arr = [];
     while ($row = mysqli_fetch_array($sql)) {

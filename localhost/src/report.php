@@ -5,7 +5,7 @@ require_once("../include/database.inc.php");
 
 $report = "";
 if (isset($_POST['submit'])) {
-    dbSortUsers();
+    //dbSortUsers();
     $report = dbGetSortedUsers();
 }
 
@@ -14,8 +14,8 @@ foreach ($report as $item)
 {
     $arr[] = [
         "name" => $item["name"],
-        "count" => $item["MAX(counted)"],
+        "surname" => $item["surname"],
+        "count" => $item["COUNT(board.id_user)"],
         ];
 }
-
 report($arr);
